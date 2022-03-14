@@ -2,6 +2,7 @@
   "name": "rest-course-amik",
   "version": "1.0.0",
   "description": "Rest API for AMIK Courses",
+  "type": "module",
   "main": "index.js",
   "scripts": {
     "start": "nodemon index.js",

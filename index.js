@@ -1,6 +1,7 @@
-const express = require('express')
-const { queryParser } = require('express-query-parser')
-const coursesRouter = require('./router/courses')
+import express from "express"
+import { queryParser } from "express-query-parser"
+import { router as coursesRouter} from './router/courses.js'
+
 
 const app = express()
 const URL = 'localhost'

@@ -1,4 +1,4 @@
-const data = [
+export const data = [
     {
         "kode": "IF20101",
         "nama": "Algorithm & Programming",
@@ -455,5 +455,3 @@ const data = [
         "isMandatory": true
     }
 ]
-
-module.exports = data

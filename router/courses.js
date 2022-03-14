@@ -1,19 +1,7 @@
-const express = require('express')
-const data = require('../transform')
+import express from "express"
+import { data }  from '../transform.js'
 
 const router = express.Router()
-
-// const detailedData = data.map(matkul => {
-//     const isMandatory = !matkul.nama.includes('*') //Courses with "*" are non-mandatory
-//     const semester = matkul.kode.charAt(4) //Semester is included in 4th digit of Courses code
-//     delete matkul.wajib
-//     return {
-//         ...matkul,
-//         sks: parseInt(matkul.sks),    
-//         isMandatory,
-//         semester: parseInt(semester)
-//     }
-// })
 
 const hasQuery = (obj) => {
     const hasQuery = (Object.keys(obj).length >= 1) ? true : false;
@@ -40,8 +28,7 @@ const getCourseByQuery = (req, res, next) => {
 }
 
 //Endpoints
-// router.get('/', [getCourses])
 
 router.get('/', [getAllCourses, getCourseByQuery])
 
-module.exports = router
+export { router }
