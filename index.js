@@ -23,5 +23,5 @@ app.get('/', (req, res) => {
 app.use('/courses', coursesRouter)
 
 app.listen(PORT, () => {
-    console.log(`Server running on ${URL + ':' + PORT}`)
+    console.log(`Server running on http://${URL + ':' + PORT}`)
 })
