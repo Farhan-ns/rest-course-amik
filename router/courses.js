@@ -1,17 +1,10 @@
 import express from "express"
-import { join, dirname } from 'path'
-import { fileURLToPath } from 'url'
-import { LowSync, JSONFileSync } from 'lowdb'
+import { v4 as uuid } from 'uuid'
+import { chain, isEmpty } from 'lodash-es'
+import { db } from '../util.js'
 
 const router = express.Router()
-
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const dbFile = join(__dirname, '../storage/db.json')
-const dbAdapter = new JSONFileSync(dbFile)
-const db = new LowSync(dbAdapter)
-
-db.read()
-db.data ||= { courses: [] }  
+db.chain = chain(db.data)
 
 const hasQuery = (obj) => {
     const hasQuery = (Object.keys(obj).length >= 1) ? true : false;
@@ -39,10 +32,30 @@ const getCourseByQuery = (req, res, next) => {
 
 //Endpoints
 router.get('/', [getAllCourses, getCourseByQuery])
+
 router.post('/', (req, res) => {
-    db.data.courses.push(req.body)
+    if (isEmpty(req.body)) {
+        res.status(400).json({
+            status: 'Fail',
+            message: 'Request body cannot be empty'
+        })  
+        return
+    }
+
+    const addedCourse = req.body.map((course) => ({
+        uuid: uuid(),
+        ...course
+    }))
+
+    addedCourse.forEach((course) => {
+        db.data.courses.push(course)
+    });
     db.write()
-    res.json(req.body)
+
+    res.json({
+        status: 'Success',
+        addedData: addedCourse
+    })
 })
 
 export { router }
