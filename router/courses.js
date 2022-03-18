@@ -1,6 +1,6 @@
 import express from "express"
 import { v4 as uuid } from 'uuid'
-import { chain, isEmpty } from 'lodash-es'
+import { chain, isEmpty, isArray } from 'lodash-es'
 import { db } from '../util.js'
 
 const router = express.Router()
@@ -27,18 +27,33 @@ const getCourseByQuery = ({ query }, res, next) => {
     res.json(courses)
 }
 
-//Endpoints
-router.get('/', [getAllCourses, getCourseByQuery])
-
-router.post('/', ({ body }, res) => {
+const requestBodyIsEmpty = ({ body }, res, next) => {
     if (isEmpty(body)) {
         res.status(400).json({
             status: 'fail',
             message: 'Request body cannot be empty'
-        })  
+        })
+    } else next()
+}
+
+const postCourseObject = ({ body }, res, next) => {
+    if (isArray(body)) {
+        next()
         return
     }
 
+    const course = { uuid: uuid(), ...body }
+
+    db.data.courses.push(course)
+    db.write()
+
+    res.json({
+        status: 'success',
+        addedData: course
+    })
+}
+
+const postCourseArray = ({ body }, res) => {
     const addedCourse = body.map((course) => ({
         uuid: uuid(),
         ...course
@@ -53,6 +68,11 @@ router.post('/', ({ body }, res) => {
         status: 'success',
         addedData: addedCourse
     })
-})
+}
+
+// Endpoints
+router.get('/', [getAllCourses, getCourseByQuery])
+
+router.post('/', [requestBodyIsEmpty, postCourseObject, postCourseArray])
 
 export { router }
