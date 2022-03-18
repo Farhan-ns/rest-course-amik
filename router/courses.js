@@ -11,38 +11,35 @@ const hasQuery = (obj) => {
     return hasQuery;
 }
 
-const getAllCourses = (req, res, next) => {
-    if (hasQuery(req.query)) {
+const getAllCourses = ({ query }, res, next) => {
+    if (hasQuery(query)) {
         next()
         return
     }
     res.json(db.data.courses)
 }
 
-const getCourseByQuery = (req, res, next) => {
-    const { query } = req
-
-    let filteredData = db.data.courses
+const getCourseByQuery = ({ query }, res, next) => {
+    let { courses } = db.data
     for (var param in query) {
-        filteredData = filteredData.filter(c => c[param] === query[param])
+        courses = courses.filter(c => c[param] === query[param])
     }
-
-    res.json(filteredData)
+    res.json(courses)
 }
 
 //Endpoints
 router.get('/', [getAllCourses, getCourseByQuery])
 
-router.post('/', (req, res) => {
-    if (isEmpty(req.body)) {
+router.post('/', ({ body }, res) => {
+    if (isEmpty(body)) {
         res.status(400).json({
-            status: 'Fail',
+            status: 'fail',
             message: 'Request body cannot be empty'
         })  
         return
     }
 
-    const addedCourse = req.body.map((course) => ({
+    const addedCourse = body.map((course) => ({
         uuid: uuid(),
         ...course
     }))
@@ -53,7 +50,7 @@ router.post('/', (req, res) => {
     db.write()
 
     res.json({
-        status: 'Success',
+        status: 'success',
         addedData: addedCourse
     })
 })
