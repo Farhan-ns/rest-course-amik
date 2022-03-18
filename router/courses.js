@@ -73,6 +73,14 @@ const postCourseArray = ({ body }, res) => {
 // Endpoints
 router.get('/', [getAllCourses, getCourseByQuery])
 
+router.get('/:kode', ({ params }, res) => {
+    const { courses } = db.data
+    const { kode } = params
+    const filteredData = courses.filter(course => course.kode === kode)
+    
+    res.json(filteredData)
+})
+
 router.post('/', [requestBodyIsEmpty, postCourseObject, postCourseArray])
 
 export { router }
