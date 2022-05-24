@@ -1,6 +1,6 @@
 import express from "express"
 import { v4 as uuid } from 'uuid'
-import { chain, isEmpty, isArray } from 'lodash-es'
+import { chain, isArray } from 'lodash-es'
 import { db, hasQuery, requestBodyIsEmpty } from '../util.js'
 
 const router = express.Router()
