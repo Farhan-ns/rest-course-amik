@@ -1,23 +1,10 @@
 import express from "express"
 import { v4 as uuid } from 'uuid'
 import { chain, isEmpty, isArray } from 'lodash-es'
-import { db } from '../util.js'
+import { db, hasQuery, requestBodyIsEmpty } from '../util.js'
 
 const router = express.Router()
 db.chain = chain(db.data)
-
-// Utility functions
-const hasQuery = (url) => (Object.keys(url).length >= 1) ? true : false
-
-const requestBodyIsEmpty = ({ body }, res, next) => {
-    if (isEmpty(body)) {
-        res.status(400).json({
-            ok: false,
-            message: 'Request body cannot be empty'
-        })
-    } else next()
-}
-//
 
 const getAllCourses = ({ query }, res, next) => {
     // If query is present, get courses based on query, otherwise return all
@@ -28,7 +15,7 @@ const getAllCourses = ({ query }, res, next) => {
     }
     res.json({
         ok: true,
-        data = db.data.courses
+        data: db.data.courses
     })
 }
 
@@ -39,7 +26,7 @@ const getCourseByQuery = ({ query }, res) => {
     }
     res.json({
         ok: true,
-        data = courses
+        data: courses
     })
 }
 
