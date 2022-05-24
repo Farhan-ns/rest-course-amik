@@ -26,7 +26,10 @@ const getAllCourses = ({ query }, res, next) => {
         next() 
         return
     }
-    res.json(db.data.courses)
+    res.json({
+        ok: true,
+        data = db.data.courses
+    })
 }
 
 const getCourseByQuery = ({ query }, res) => {
@@ -34,7 +37,10 @@ const getCourseByQuery = ({ query }, res) => {
     for (var param in query) {
         courses = courses.filter(course => course[param] === query[param])
     }
-    res.json(courses)
+    res.json({
+        ok: true,
+        data = courses
+    })
 }
 
 const getCourseByCode = ({ params: {kode} }, res) => {
