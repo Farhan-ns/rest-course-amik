@@ -6,34 +6,52 @@ import { db } from '../util.js'
 const router = express.Router()
 db.chain = chain(db.data)
 
-const hasQuery = (obj) => {
-    const hasQuery = (Object.keys(obj).length >= 1) ? true : false;
-    return hasQuery;
+// Utility functions
+const hasQuery = (url) => (Object.keys(url).length >= 1) ? true : false
+
+const requestBodyIsEmpty = ({ body }, res, next) => {
+    if (isEmpty(body)) {
+        res.status(400).json({
+            ok: false,
+            message: 'Request body cannot be empty'
+        })
+    } else next()
 }
+//
 
 const getAllCourses = ({ query }, res, next) => {
+    // If query is present, get courses based on query, otherwise return all
+    // TODO I may need to implement a pagination here
     if (hasQuery(query)) {
-        next()
+        next() 
         return
     }
     res.json(db.data.courses)
 }
 
-const getCourseByQuery = ({ query }, res, next) => {
+const getCourseByQuery = ({ query }, res) => {
     let { courses } = db.data
     for (var param in query) {
-        courses = courses.filter(c => c[param] === query[param])
+        courses = courses.filter(course => course[param] === query[param])
     }
     res.json(courses)
 }
 
-const requestBodyIsEmpty = ({ body }, res, next) => {
-    if (isEmpty(body)) {
-        res.status(400).json({
-            status: 'fail',
-            message: 'Request body cannot be empty'
+const getCourseByCode = ({ params: {kode} }, res) => {
+    let { courses } = db.data
+    courses = courses.filter(course => course.kode === kode)
+
+    if (courses.length < 1) {
+        res.status(404).json({
+            ok: false,
+            error: "Course with such code not found"
         })
-    } else next()
+    }
+
+    res.json({
+        ok: true,
+        data: courses
+    })
 }
 
 const postCourseObject = ({ body }, res, next) => {
@@ -43,12 +61,11 @@ const postCourseObject = ({ body }, res, next) => {
     }
 
     const course = { uuid: uuid(), ...body }
-
     db.data.courses.push(course)
     db.write()
 
     res.json({
-        status: 'success',
+        ok: true,
         addedData: course
     })
 }
@@ -65,21 +82,14 @@ const postCourseArray = ({ body }, res) => {
     db.write()
 
     res.json({
-        status: 'success',
+        ok: false,
         addedData: addedCourse
     })
 }
 
 // Endpoints
 router.get('/', [getAllCourses, getCourseByQuery])
-
-router.get('/:kode', ({ params }, res) => {
-    const { courses } = db.data
-    const { kode } = params
-    const filteredData = courses.filter(course => course.kode === kode)
-    
-    res.json(filteredData)
-})
+router.get('/:kode', getCourseByCode)
 
 router.post('/', [requestBodyIsEmpty, postCourseObject, postCourseArray])
 
