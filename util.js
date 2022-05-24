@@ -1,5 +1,6 @@
 import { join, dirname } from 'path'
 import { fileURLToPath } from 'url'
+import { isEmpty } from 'lodash-es'
 import { LowSync, JSONFileSync } from 'lowdb'
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -16,4 +17,15 @@ const readDB = () => {
     }
 }
 
-export { readDB, db }
+const hasQuery = (url) => (Object.keys(url).length >= 1) ? true : false
+
+const requestBodyIsEmpty = ({ body }, res, next) => {
+    if (isEmpty(body)) {
+        res.status(400).json({
+            ok: false,
+            message: 'Request body cannot be empty'
+        })
+    } else next()
+}
+
+export { readDB, hasQuery, requestBodyIsEmpty, db }

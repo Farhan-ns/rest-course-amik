@@ -5,7 +5,7 @@ import { readDB } from './util.js'
 
 const app = express()
 const URL = 'localhost'
-const PORT = 3000
+const PORT = process.env.PORT || 3000
 
 app.use(
     queryParser({
